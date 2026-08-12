@@ -1,6 +1,6 @@
 {
-  "name": "우리 앱 — 가족·친구와 함께 쓰는 기록",
-  "short_name": "우리 앱",
+  "name": "ourLog — 가족·친구와 함께 쓰는 기록",
+  "short_name": "ourLog",
   "description": "somedayLog · studyLog · healthLog · 우리집 플래너를 한 곳에서",
   "lang": "ko",
   "start_url": "/",

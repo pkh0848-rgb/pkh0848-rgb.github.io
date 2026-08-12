@@ -1,4 +1,4 @@
-# 우리 앱
+# ourLog
 
 가족·친구와 함께 쓰는 기록 앱 모음의 시작 페이지입니다.
 `https://pkh0848-rgb.github.io/`
