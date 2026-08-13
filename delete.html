@@ -1,0 +1,380 @@
+TEST-LINE-1
+TEST-LINE-2<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>계정 삭제 · ourLog</title>
+<link rel="icon" href="/icons/icon-192.png"/>
+<style>
+:root{
+  --bg:#0f1420; --card:#1a2130; --line:#2a3346; --tx:#e8edf6; --dim:#93a0b5;
+  --acc:#7aa2ff; --danger:#ff6b6b; --ok:#4ade80;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  line-height:1.65;font-size:15px}
+.wrap{max-width:640px;margin:0 auto;padding:24px 18px 80px}
+h1{font-size:22px;margin:8px 0 4px}
+h2{font-size:16px;margin:26px 0 10px;color:var(--acc)}
+p{margin:8px 0;color:var(--dim)}
+.lead{color:var(--tx)}
+a{color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0}
+.app{display:flex;align-items:center;gap:12px}
+.app .emo{font-size:24px;line-height:1}
+.app .nm{font-weight:700;flex:1}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);
+  background:#222b3d;color:var(--tx);padding:9px 14px}
+button:disabled{opacity:.45;cursor:default}
+button.danger{background:var(--danger);border-color:var(--danger);color:#fff;font-weight:700}
+button.wide{display:block;width:100%;margin-top:10px}
+ul{margin:8px 0;padding-left:20px;color:var(--dim)}
+li{margin:4px 0}
+.small{font-size:13px}
+.log{background:#111826;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+  margin-top:10px;font-size:13px;white-space:pre-wrap;color:var(--dim);max-height:240px;overflow:auto}
+.status{font-size:13px;margin-top:6px}
+.status.ok{color:var(--ok)} .status.err{color:var(--danger)}
+.warn{border-color:#5a2b2b;background:#241618}
+.chk{display:flex;gap:9px;align-items:flex-start;margin:12px 0;color:var(--tx);font-size:14px}
+.chk input{margin-top:4px;width:17px;height:17px;accent-color:var(--danger)}
+hr{border:0;border-top:1px solid var(--line);margin:26px 0}
+.foot{color:#6b7789;font-size:12.5px;text-align:center;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="small"><a href="/">&larr; ourLog</a></p>
+  <h1>계정 및 데이터 삭제</h1>
+  <p class="lead">ourLog(somedayLog · studyLog · healthLog · 우리집 플래너)에서 계정을 삭제하고
+  저장된 데이터를 지울 수 있습니다. 이 페이지에서 직접 처리하거나, 아래 이메일로 요청하셔도 됩니다.</p>
+
+  <h2>무엇이 삭제되나요</h2>
+  <div class="card">
+    <ul>
+      <li><b>내가 남긴 기록</b> — 운동/공부 기록, 인바디 기록, 서랍에 담은 항목, 알림 기록</li>
+      <li><b>내 프로필</b> — 이름, 캐릭터, 참여한 방 목록, 푸시 알림 토큰</li>
+      <li><b>로그인 계정</b> — Firebase 인증 계정(Google 로그인 연결)이 완전히 삭제됩니다</li>
+    </ul>
+    <p class="small">함께 쓰는 방에 <b>다른 사람이 남아 있으면</b> 그 사람의 기록과 방 자체는 유지되고,
+    내 기록과 내 멤버 정보만 지워집니다. <b>내가 마지막 한 명이면</b> 방과 초대 코드까지 모두 삭제됩니다.</p>
+    <p class="small">삭제는 <b>즉시, 되돌릴 수 없게</b> 처리됩니다. 백업본은 보관하지 않습니다.
+    (서버 운영 로그에 남을 수 있는 접속 기록은 최대 30일 내 자동 삭제)</p>
+  </div>
+
+  <h2>직접 삭제하기</h2>
+  <p class="small">앱마다 로그인 계정이 별도로 관리됩니다. 사용하시는 앱을 하나씩 눌러 진행해 주세요.</p>
+
+  <div id="apps"></div>
+
+  <hr/>
+  <h2>이메일로 요청하기</h2>
+  <div class="card">
+    <p>직접 삭제가 어려우시면 아래로 요청해 주세요. 가입에 사용한 Google 계정 주소와 앱 이름을 적어주시면
+    확인 후 <b>영업일 기준 5일 이내</b>에 삭제하고 회신드립니다.</p>
+    <p><a href="mailto:pkh0848@gmail.com">pkh0848@gmail.com</a></p>
+  </div>
+
+  <p class="foot">ourLog · <a href="/privacy.html">개인정보 처리방침</a> · <a href="/terms.html">이용약관</a></p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+(function(){
+'use strict';
+
+var APPS = [
+  { key:'somedaylog', emo:'🗂️', name:'somedayLog', desc:'언젠가 서랍', kind:'fs',
+    cfg:{apiKey:"AIzaSyCCwWQ3bfyUORSqPuiKT0RHanwfnRV6pz0",authDomain:"somedaylog-7e021.firebaseapp.com",projectId:"somedaylog-7e021",storageBucket:"somedaylog-7e021.firebasestorage.app",messagingSenderId:"181219597244",appId:"1:181219597244:web:43684dee4341a3059869b9"} },
+  { key:'studylog', emo:'📚', name:'studyLog', desc:'공부 캘린더', kind:'rooms',
+    cfg:{apiKey:"AIzaSyBjlWA9GHPvL4sGEdOShwyaCnPDuLgIcPA",authDomain:"studylog-cd02a.firebaseapp.com",databaseURL:"https://studylog-cd02a-default-rtdb.firebaseio.com",projectId:"studylog-cd02a",storageBucket:"studylog-cd02a.firebasestorage.app",messagingSenderId:"714212261002",appId:"1:714212261002:web:075c8c992ba986b5a9c173"} },
+  { key:'healthlog', emo:'💪', name:'healthLog', desc:'헬스 플래너', kind:'rooms',
+    cfg:{apiKey:"AIzaSyCljCJJJLG_EDd_zFZ0SYlyi4TSGwNZBZU",authDomain:"healthlog-b5047.firebaseapp.com",databaseURL:"https://healthlog-b5047-default-rtdb.firebaseio.com",projectId:"healthlog-b5047",storageBucket:"healthlog-b5047.firebasestorage.app",messagingSenderId:"290979174692",appId:"1:290979174692:web:d9272c37f5b5bd42e7bbb1"} },
+  { key:'homelog', emo:'🏠', name:'우리집 플래너', desc:'homeLog', kind:'house',
+    cfg:{apiKey:"AIzaSyBZJ1juV2C2dTiLAUcAM25n98lmtlKU6Pg",authDomain:"homelog-8b94f.firebaseapp.com",databaseURL:"https://homelog-8b94f-default-rtdb.firebaseio.com",projectId:"homelog-8b94f",storageBucket:"homelog-8b94f.firebasestorage.app",messagingSenderId:"529137751350",appId:"1:529137751350:web:dee9bb8156f443a2758f97"} }
+];
+
+var ROOT_HOUSE = 'chorePlanner';
+function el(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+function render(){
+  var h = '';
+  APPS.forEach(function(a){
+    h += '<div class="card" id="c_'+a.key+'">'
+      +   '<div class="app"><span class="emo">'+a.emo+'</span>'
+      +     '<span class="nm">'+esc(a.name)+' <span class="small" style="color:var(--dim);font-weight:400">'+esc(a.desc)+'</span></span>'
+      +     '<button id="b_'+a.key+'">로그인해서 확인</button>'
+      +   '</div>'
+      +   '<div class="status" id="s_'+a.key+'"></div>'
+      +   '<div id="d_'+a.key+'"></div>'
+      + '</div>';
+  });
+  el('apps').innerHTML = h;
+  APPS.forEach(function(a){ el('b_'+a.key).onclick = function(){ start(a); }; });
+}
+
+function say(a, msg, cls){
+  var s = el('s_'+a.key);
+  s.className = 'status' + (cls ? ' '+cls : '');
+  s.innerHTML = msg;
+}
+function log(a, line){
+  var d = el('d_'+a.key);
+  var box = d.querySelector('.log');
+  if(!box){ box = document.createElement('div'); box.className='log'; d.appendChild(box); }
+  box.textContent += (box.textContent ? '\n' : '') + line;
+  box.scrollTop = box.scrollHeight;
+}
+
+var handles = {};
+function fbApp(a){
+  if(handles[a.key]) return handles[a.key];
+  var app;
+  try{ app = firebase.app(a.key); }catch(e){ app = firebase.initializeApp(a.cfg, a.key); }
+  handles[a.key] = app;
+  return app;
+}
+function signIn(a){
+  var auth = firebase.auth(fbApp(a));
+  var p = new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({ prompt:'select_account' });
+  return auth.signInWithPopup(p).then(function(r){ return r.user; });
+}
+
+function preview(a, user){
+  if(a.kind === 'fs')    return previewFs(a, user);
+  if(a.kind === 'rooms') return previewRooms(a, user);
+  return previewHouse(a, user);
+}
+function previewFs(a, user){
+  var fs = firebase.firestore(fbApp(a));
+  return fs.collection('rooms').where('members','array-contains',user.uid).get().then(function(qs){
+    return Promise.all(qs.docs.map(function(d){
+      return d.ref.collection('items').get().then(function(items){
+        var mem = d.data().members || [];
+        var mine = items.docs.filter(function(x){ return x.data().by === user.uid; }).length;
+        var last = mem.filter(function(m){ return m !== user.uid; }).length === 0;
+        var nm = d.data().name || '이름 없는 서랍';
+        return last ? ('서랍 「'+nm+'」 — 마지막 멤버이므로 기록 '+items.size+'개와 서랍 전체 삭제')
+                    : ('서랍 「'+nm+'」 — 내 기록 '+mine+'개 삭제 후 나가기 (남은 기록 '+(items.size-mine)+'개 유지)');
+      });
+    })).then(function(rows){ return { rows: rows }; });
+  });
+}
+function previewRooms(a, user){
+  var db = firebase.database(fbApp(a));
+  return db.ref('userRooms/'+user.uid).once('value').then(function(s){
+    var ids = Object.keys(s.val() || {});
+    return Promise.all(ids.map(function(rid){
+      return db.ref('rooms/'+rid).once('value').then(function(rs){
+        var r = rs.val(); if(!r) return null;
+        var mem = Object.keys(r.members || {});
+        var last = mem.filter(function(m){ return m !== user.uid; }).length === 0;
+        var mine = 0;
+        Object.keys(r.logs || {}).forEach(function(dt){
+          if(r.logs[dt] && r.logs[dt][user.uid] !== undefined) mine++;
+        });
+        var inb = (r.inbody && r.inbody[user.uid]) ? Object.keys(r.inbody[user.uid]).length : 0;
+        var nm = (r.meta && r.meta.name) || rid;
+        return last ? ('방 「'+nm+'」 — 마지막 멤버이므로 방과 초대 코드 전체 삭제')
+                    : ('방 「'+nm+'」 — 내 기록 '+mine+'일치'+(inb?(' · 인바디 '+inb+'건'):'')+' 삭제 후 나가기');
+      });
+    })).then(function(rows){ return { rows: rows.filter(Boolean) }; });
+  });
+}
+function previewHouse(a, user){
+  var db = firebase.database(fbApp(a));
+  return db.ref(ROOT_HOUSE+'/members').once('value').then(function(s){
+    var mem = Object.keys(s.val() || {});
+    if(mem.indexOf(user.uid) < 0) return { rows: ['참여 중인 집이 없습니다. 로그인 계정만 삭제됩니다.'] };
+    var last = mem.filter(function(m){ return m !== user.uid; }).length === 0;
+    return { rows: [ last ? '우리집 플래너 — 마지막 멤버이므로 집안일·메모·기록 전체 삭제'
+                          : '우리집 플래너 — 내 멤버 정보 삭제 후 나가기 (공동 기록은 남은 가족에게 유지)' ] };
+  });
+}
+
+function wipe(a, user){
+  if(a.kind === 'fs')    return wipeFs(a, user);
+  if(a.kind === 'rooms') return wipeRooms(a, user);
+  return wipeHouse(a, user);
+}
+function delDocs(fs, docs){
+  var i = 0;
+  function chunk(){
+    if(i >= docs.length) return Promise.resolve();
+    var b = fs.batch(), n = 0;
+    while(i < docs.length && n < 400){ b.delete(docs[i].ref); i++; n++; }
+    return b.commit().then(chunk);
+  }
+  return chunk();
+}
+function wipeFs(a, user){
+  var fs = firebase.firestore(fbApp(a));
+  return fs.collection('rooms').where('members','array-contains',user.uid).get().then(function(qs){
+    return qs.docs.reduce(function(chain, d){
+      return chain.then(function(){
+        var data = d.data() || {};
+        var nm = data.name || '이름 없는 서랍';
+        var others = (data.members || []).filter(function(m){ return m !== user.uid; });
+        if(others.length === 0){
+          return d.ref.collection('items').get().then(function(items){
+            return delDocs(fs, items.docs).then(function(){
+              var code = data.code;
+              var p = code ? fs.collection('joinCodes').doc(String(code)).delete().catch(function(){}) : Promise.resolve();
+              return p.then(function(){ return d.ref.delete(); })
+                      .then(function(){ log(a, '✓ 서랍 「'+nm+'」 전체 삭제 (기록 '+items.size+'개)'); });
+            });
+          });
+        }
+        return d.ref.collection('items').where('by','==',user.uid).get().then(function(mine){
+          return delDocs(fs, mine.docs).then(function(){
+            var mn = data.memberNames || {};
+            delete mn[user.uid];
+            return d.ref.update({
+              members: firebase.firestore.FieldValue.arrayRemove(user.uid),
+              memberNames: mn
+            }).then(function(){ log(a, '✓ 서랍 「'+nm+'」 내 기록 '+mine.size+'개 삭제 후 나감'); });
+          });
+        });
+      });
+    }, Promise.resolve());
+  });
+}
+
+function wipeRooms(a, user){
+  var db = firebase.database(fbApp(a));
+  var uid = user.uid;
+  return db.ref('userRooms/'+uid).once('value').then(function(s){
+    var ids = Object.keys(s.val() || {});
+    return ids.reduce(function(chain, rid){
+      return chain.then(function(){
+        return db.ref('rooms/'+rid).once('value').then(function(rs){
+          var r = rs.val(); if(!r) return;
+          var nm = (r.meta && r.meta.name) || rid;
+          var code = r.meta && r.meta.code;
+          var others = Object.keys(r.members || {}).filter(function(m){ return m !== uid; });
+          if(others.length === 0){
+            return db.ref('rooms/'+rid).remove()
+              .then(function(){ return code ? db.ref('roomCodes/'+code).remove().catch(function(){}) : null; })
+              .then(function(){ log(a, '✓ 방 「'+nm+'」 전체 삭제'); });
+          }
+          var up = {}, cnt = 0;
+          Object.keys(r.logs || {}).forEach(function(dt){
+            if(r.logs[dt] && r.logs[dt][uid] !== undefined){ up['logs/'+dt+'/'+uid] = null; cnt++; }
+          });
+          if(r.inbody   && r.inbody[uid]   !== undefined) up['inbody/'+uid]   = null;
+          if(r.freqHide && r.freqHide[uid] !== undefined) up['freqHide/'+uid] = null;
+          Object.keys(r.notifications || {}).forEach(function(nid){
+            var n = r.notifications[nid];
+            if(n && (n.p === uid || n.uid === uid)) up['notifications/'+nid] = null;
+          });
+          up['members/'+uid] = null;
+          return db.ref('rooms/'+rid).update(up)
+            .then(function(){ log(a, '✓ 방 「'+nm+'」 내 기록 '+cnt+'일치 삭제 후 나감'); });
+        });
+      });
+    }, Promise.resolve());
+  }).then(function(){
+    return db.ref('userRooms/'+uid).remove();
+  }).then(function(){
+    log(a, '✓ 내 방 목록 삭제');
+    return db.ref('fcmTokens').once('value').then(function(s){
+      var v = s.val() || {}, up = {}, n = 0;
+      Object.keys(v).forEach(function(k){
+        var t = v[k];
+        if(t && (t.uid === uid || t.user === uid)){ up[k] = null; n++; }
+      });
+      if(!n) return null;
+      return db.ref('fcmTokens').update(up).then(function(){ log(a, '✓ 푸시 토큰 '+n+'건 삭제'); });
+    }).catch(function(){ return null; });
+  });
+}
+function wipeHouse(a, user){
+  var db = firebase.database(fbApp(a));
+  var uid = user.uid;
+  return db.ref(ROOT_HOUSE+'/members').once('value').then(function(s){
+    var mem = Object.keys(s.val() || {});
+    if(mem.indexOf(uid) < 0){ log(a, '· 참여 중인 집 없음'); return; }
+    var others = mem.filter(function(m){ return m !== uid; });
+    if(others.length === 0){
+      return db.ref(ROOT_HOUSE).remove().then(function(){ log(a, '✓ 우리집 플래너 데이터 전체 삭제'); });
+    }
+    return db.ref(ROOT_HOUSE+'/members/'+uid).remove()
+      .then(function(){ log(a, '✓ 우리집 플래너에서 나감 (공동 기록 유지)'); });
+  });
+}
+
+function killAccount(a, user){
+  return user.delete().catch(function(e){
+    if(e && e.code === 'auth/requires-recent-login'){
+      log(a, '· 보안을 위해 다시 로그인합니다…');
+      var p = new firebase.auth.GoogleAuthProvider();
+      p.setCustomParameters({ prompt:'select_account' });
+      return user.reauthenticateWithPopup(p).then(function(){ return user.delete(); });
+    }
+    throw e;
+  });
+}
+
+function start(a){
+  var btn = el('b_'+a.key);
+  btn.disabled = true;
+  say(a, '로그인 창을 확인해 주세요…');
+  signIn(a).then(function(user){
+    say(a, '<b>'+esc(user.email || user.uid)+'</b> 계정으로 확인했습니다.', 'ok');
+    return preview(a, user).then(function(pv){ showConfirm(a, user, pv.rows); });
+  }).catch(function(e){
+    btn.disabled = false;
+    var m = (e && e.code) || (e && e.message) || String(e);
+    if(m.indexOf('popup-closed') >= 0 || m.indexOf('cancelled-popup') >= 0) say(a, '로그인이 취소되었습니다.', 'err');
+    else say(a, '오류: '+esc(m), 'err');
+  });
+}
+
+function showConfirm(a, user, rows){
+  var d = el('d_'+a.key);
+  var list = rows.length
+    ? '<ul>'+rows.map(function(r){ return '<li>'+esc(r)+'</li>'; }).join('')+'</ul>'
+    : '<p class="small">저장된 기록이 없습니다. 로그인 계정만 삭제됩니다.</p>';
+  d.innerHTML =
+      '<div class="card warn" style="margin-top:12px">'
+    +   '<p class="small" style="color:var(--tx)"><b>삭제될 내용</b></p>'
+    +   list
+    +   '<p class="small">여기에 더해 <b>'+esc(a.name)+'</b>의 로그인 계정이 삭제되어 다시 로그인할 수 없게 됩니다.</p>'
+    +   '<label class="chk"><input type="checkbox" id="k_'+a.key+'"/>'
+    +     '<span>되돌릴 수 없다는 점을 이해했으며, 위 내용을 영구 삭제하는 데 동의합니다.</span></label>'
+    +   '<button class="danger wide" id="x_'+a.key+'" disabled>영구 삭제</button>'
+    + '</div>';
+  var chk = el('k_'+a.key), go = el('x_'+a.key);
+  chk.onchange = function(){ go.disabled = !chk.checked; };
+  go.onclick = function(){
+    go.disabled = true; chk.disabled = true;
+    say(a, '삭제 중… 창을 닫지 마세요.');
+    wipe(a, user)
+      .then(function(){ return killAccount(a, user); })
+      .then(function(){
+        log(a, '✓ 로그인 계정 삭제 완료');
+        say(a, '삭제가 모두 완료되었습니다.', 'ok');
+        go.textContent = '삭제 완료';
+      })
+      .catch(function(e){
+        var m = (e && e.code) || (e && e.message) || String(e);
+        log(a, '✗ 실패: '+m);
+        say(a, '일부 처리에 실패했습니다. 다시 시도하거나 pkh0848@gmail.com 으로 알려주세요. ('+esc(m)+')', 'err');
+        go.disabled = false; chk.disabled = false;
+      });
+  };
+}
+
+render();
+})();
+</script>
+</body>
+</html>
