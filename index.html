@@ -30,7 +30,7 @@
   function verify(w){
     var iw=window.innerWidth||0;
     window.__vpFix.after=iw;
-    if(iw>0 && (iw<260 || iw>780)){        /* 기기가 예상과 다른게 동작 → 원상복구하고 더는 건드리지 않음 */
+    if(iw>0 && (iw<260 || iw>780)){        /* 기기가 예상과 다르게 동작 → 원상복구하고 더는 건드리지 않음 */
       var rest=keepRest();
       setVp('width=device-width,initial-scale=1.0'+(rest?','+rest:''));
       window.__vpFix.reverted=true; done=false; gaveUp=true;
