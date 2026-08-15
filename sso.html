@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"/>
+<title>세션 준비</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+</head><body>
+<script>
+/* ourLog 세션 준비용 숨은 페이지.
+   런처에서 구글 로그인을 한 번 하면, 이 페이지를 앱마다 하나씩 보이지 않게 띄운다.
+   여기서 해당 앱의 Firebase 프로젝트를 '기본' 이름으로 초기화하고 로그인을 마치면
+   그 세션이 브라우저에 남아, 나중에 그 앱을 열 때 로그인 화면 없이 바로 들어간다.
+   (앱마다 프로젝트가 달라서 세션도 따로 만들어야 한다) */
+(function(){
+  var CFG={
+    somedaylog:{apiKey:"AIzaSyCCwWQ3bfyUORSqPuiKT0RHanwfnRV6pz0",authDomain:"somedaylog-7e021.firebaseapp.com",projectId:"somedaylog-7e021",storageBucket:"somedaylog-7e021.firebasestorage.app",messagingSenderId:"181219597244",appId:"1:181219597244:web:43684dee4341a3059869b9"},
+    studylog:{apiKey:"AIzaSyBjlWA9GHPvL4sGEdOShwyaCnPDuLgIcPA",authDomain:"studylog-cd02a.firebaseapp.com",databaseURL:"https://studylog-cd02a-default-rtdb.firebaseio.com",projectId:"studylog-cd02a",storageBucket:"studylog-cd02a.firebasestorage.app",messagingSenderId:"714212261002",appId:"1:714212261002:web:075c8c992ba986b5a9c173"},
+    healthlog:{apiKey:"AIzaSyCljCJJJLG_EDd_zFZ0SYlyi4TSGwNZBZU",authDomain:"healthlog-b5047.firebaseapp.com",databaseURL:"https://healthlog-b5047-default-rtdb.firebaseio.com",projectId:"healthlog-b5047",storageBucket:"healthlog-b5047.firebasestorage.app",messagingSenderId:"290979174692",appId:"1:290979174692:web:d9272c37f5b5bd42e7bbb1"},
+    homelog:{apiKey:"AIzaSyBZJ1juV2C2dTiLAUcAM25n98lmtlKU6Pg",authDomain:"homelog-8b94f.firebaseapp.com",databaseURL:"https://homelog-8b94f-default-rtdb.firebaseio.com",projectId:"homelog-8b94f",storageBucket:"homelog-8b94f.firebasestorage.app",messagingSenderId:"529137751350",appId:"1:529137751350:web:dee9bb8156f443a2758f97"}
+  };
+  function reply(ok, detail){
+    try{ parent.postMessage({ourlogSSO:true, app:APP, ok:!!ok, detail:detail||''}, location.origin); }catch(e){}
+  }
+  var APP=(location.hash||'').replace('#','') || (new URLSearchParams(location.search)).get('a') || '';
+  var cfg=CFG[APP];
+  if(!cfg){ reply(false,'unknown app'); return; }
+
+  var token=null;
+  try{
+    var v=JSON.parse(localStorage.getItem('ourlog_gidt')||'null');
+    if(v && v.exp>Date.now()) token=v.t;
+  }catch(e){}
+  if(!token){ reply(false,'no token'); return; }
+
+  firebase.initializeApp(cfg);              /* 기본 이름 — 실제 앱과 같은 세션 키를 쓴다 */
+  var auth=firebase.auth();
+  auth.onAuthStateChanged(function(u){
+    if(u){ reply(true,'already'); }
+  });
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){}).then(function(){
+    if(auth.currentUser){ reply(true,'already'); return; }
+    var cred=firebase.auth.GoogleAuthProvider.credential(token);
+    return auth.signInWithCredential(cred)
+      .then(function(){ reply(true,'signed'); })
+      .catch(function(e){ reply(false,(e&&e.code)||'fail'); });
+  });
+})();
+</script>
+</body></html>

@@ -1,6 +1,6 @@
 /* 우리 앱 런처 — 설치(PWA) + 오프라인. 네트워크 우선이라 항상 최신을 받는다 */
-var CACHE='ourlog-v1';
-var SHELL=['/','/index.html','/manifest.webmanifest','/privacy.html','/terms.html',
+var CACHE='ourlog-v2';
+var SHELL=['/','/index.html','/sso.html','/manifest.webmanifest','/privacy.html','/terms.html',
            '/icon-192.png','/icon-512.png','/icon-maskable-512.png'];
 self.addEventListener('install',function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(SHELL);}).catch(function(){}).then(function(){return self.skipWaiting();}));});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k!==CACHE;}).map(function(k){return caches.delete(k);}));}).then(function(){return self.clients.claim();}));});
